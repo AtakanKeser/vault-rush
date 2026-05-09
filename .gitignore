@@ -1,0 +1,30 @@
+# Go
+backend/bin/
+backend/coverage.out
+backend/*.test
+
+# Node
+node_modules/
+dist/
+.vite/
+*.local
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!example.tfvars
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+
+# Load test artifacts
+load-tests/results/*.json

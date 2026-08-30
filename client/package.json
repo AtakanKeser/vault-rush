@@ -1,0 +1,21 @@
+{
+  "name": "vault-rush-client",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host --port 5173",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 5173",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:k6": "esbuild src/engine/index.ts --bundle --format=esm --target=es2020 --outfile=../load-tests/k6/lib/engine.js --banner:js=\"// GENERATED from client/src/engine by npm run build:k6 — do not edit.\""
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.7",
+    "vitest": "^3.0.5"
+  }
+}

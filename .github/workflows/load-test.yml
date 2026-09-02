@@ -1,0 +1,97 @@
+name: Load test
+
+# Manual k6 run against any reachable API (a staging ALB, an ngrok tunnel to a laptop, ...).
+# Results (k6 summary JSON + a text report in the job summary) are uploaded as artifacts.
+# See load-tests/k6/README.md and docs/load-testing.md for the method and threshold rationale.
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "API base URL (e.g. https://api.vault-rush.example.com)"
+        required: true
+        type: string
+      script:
+        description: "k6 script"
+        required: true
+        type: choice
+        default: leaderboard.js
+        options:
+          - smoke.js
+          - leaderboard.js
+          - profile.js
+          - heist-flow.js
+      vus:
+        description: "Virtual users"
+        required: false
+        default: "50"
+        type: string
+      duration:
+        description: "Duration (k6 syntax, e.g. 60s, 5m)"
+        required: false
+        default: "60s"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: load-test
+  cancel-in-progress: false
+
+jobs:
+  k6:
+    name: k6 ${{ inputs.script }} @ ${{ inputs.vus }} VUs
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: grafana/setup-k6-action@v1
+
+      - name: Run k6
+        id: k6
+        uses: grafana/run-k6-action@v1
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+          VUS: ${{ inputs.vus }}
+          DURATION: ${{ inputs.duration }}
+          # Scripts write <script>-summary.json to RESULTS_DIR relative to the working dir.
+          RESULTS_DIR: load-tests/results
+        with:
+          path: load-tests/k6/${{ inputs.script }}
+          fail-fast: true
+
+      - name: Report
+        if: always()
+        run: |
+          {
+            echo "## k6: ${{ inputs.script }}"
+            echo
+            echo "- base_url: \`${{ inputs.base_url }}\`"
+            echo "- vus: ${{ inputs.vus }}, duration: ${{ inputs.duration }}"
+            echo "- result: ${{ steps.k6.outcome }}"
+            echo
+            for f in load-tests/results/*-summary.json; do
+              [ -f "$f" ] || continue
+              echo "### $(basename "$f")"
+              echo '```'
+              jq -r '
+                .metrics as $m
+                | "requests:      \($m.http_reqs.values.count // 0)",
+                  "error rate:    \(($m.http_req_failed.values.rate // 0) * 100 | . * 100 | round / 100)%",
+                  "p50 (ms):      \($m.http_req_duration.values["p(50)"] // $m.http_req_duration.values.med // 0 | . * 100 | round / 100)",
+                  "p95 (ms):      \($m.http_req_duration.values["p(95)"] // 0 | . * 100 | round / 100)",
+                  "p99 (ms):      \($m.http_req_duration.values["p(99)"] // 0 | . * 100 | round / 100)"
+              ' "$f"
+              echo '```'
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k6-${{ inputs.script }}-${{ github.run_number }}
+          path: load-tests/results/*.json
+          if-no-files-found: warn
+          retention-days: 30

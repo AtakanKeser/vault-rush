@@ -1,0 +1,270 @@
+name: Deploy
+
+# Runs after the CI workflow succeeds on main (workflow_run) or manually. Every job that
+# touches AWS uses the `production` GitHub environment.
+#
+# Environment `production` (Settings -> Environments -> production) should be configured with:
+#   - Required reviewers: at least one maintainer must approve before the jobs start.
+#   - Deployment branches: only `main`.
+#   - Secrets:   AWS_ROLE_ARN            IAM role trusted by GitHub's OIDC provider
+#   - Variables: AWS_REGION              default eu-central-1
+#                ECS_CLUSTER             default vault-rush-prod
+#                ECS_SERVICE_API         default vault-rush-prod-api
+#                ECS_SERVICE_WORKER      default vault-rush-prod-worker
+#                ECR_REPOSITORY_API      default vault-rush-prod-api
+#                ECR_REPOSITORY_WORKER   default vault-rush-prod-worker
+#                CLIENT_BUCKET, CLIENT_DISTRIBUTION_ID, CLIENT_API_URL
+#                ADMIN_BUCKET,  ADMIN_DISTRIBUTION_ID,  ADMIN_API_URL
+#   Terraform outputs (infrastructure/terraform: `terraform output`) provide all of these.
+#
+# No long-lived AWS keys: aws-actions/configure-aws-credentials exchanges the job's OIDC
+# token for short-lived credentials of AWS_ROLE_ARN.
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      deploy_static:
+        description: "Also sync client/admin to S3 + invalidate CloudFront"
+        type: boolean
+        default: true
+
+# Never run two production deploys at once, and never cancel one halfway.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  # Commit being deployed: the CI run's head for workflow_run, the current ref otherwise.
+  DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+  AWS_REGION: ${{ vars.AWS_REGION || 'eu-central-1' }}
+
+jobs:
+  gate:
+    name: gate (CI succeeded on main)
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    steps:
+      - run: |
+          echo "Deploying ${DEPLOY_SHA} (trigger: ${{ github.event_name }})" | tee -a "$GITHUB_STEP_SUMMARY"
+
+  # ------------------------------------------------------------------------------------
+  # Build and push the two Go images to ECR, tagged with the commit SHA and `latest`.
+  # ------------------------------------------------------------------------------------
+  images:
+    name: build+push ${{ matrix.image }}
+    needs: gate
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      fail-fast: true
+      matrix:
+        image: [api, worker]
+    outputs:
+      registry: ${{ steps.ecr.outputs.registry }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: gha-vault-rush-images
+          aws-region: ${{ env.AWS_REGION }}
+
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Resolve repository name
+        id: repo
+        run: |
+          case "${{ matrix.image }}" in
+            api)    echo "name=${{ vars.ECR_REPOSITORY_API || 'vault-rush-prod-api' }}" >> "$GITHUB_OUTPUT" ;;
+            worker) echo "name=${{ vars.ECR_REPOSITORY_WORKER || 'vault-rush-prod-worker' }}" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infrastructure/docker/${{ matrix.image }}.Dockerfile
+          push: true
+          platforms: linux/amd64
+          provenance: false
+          tags: |
+            ${{ steps.ecr.outputs.registry }}/${{ steps.repo.outputs.name }}:${{ env.DEPLOY_SHA }}
+            ${{ steps.ecr.outputs.registry }}/${{ steps.repo.outputs.name }}:latest
+          build-args: |
+            VERSION=${{ env.DEPLOY_SHA }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,scope=${{ matrix.image }},mode=max
+
+      - name: Summary
+        run: |
+          echo "- pushed \`${{ steps.repo.outputs.name }}:${DEPLOY_SHA}\` (+ latest)" >> "$GITHUB_STEP_SUMMARY"
+
+  # ------------------------------------------------------------------------------------
+  # Roll the ECS services. The current task definition is fetched from ECS (Terraform owns
+  # the template: env vars, secrets, sizing), only the image is rewritten, and the new
+  # revision is deployed with a wait for service stability (circuit breaker rolls back on
+  # failure). Both services roll in parallel.
+  # ------------------------------------------------------------------------------------
+  ecs:
+    name: deploy ecs ${{ matrix.service }}
+    needs: images
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [api, worker]
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: gha-vault-rush-ecs-${{ matrix.service }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Resolve names
+        id: names
+        run: |
+          cluster="${{ vars.ECS_CLUSTER || 'vault-rush-prod' }}"
+          case "${{ matrix.service }}" in
+            api)
+              service="${{ vars.ECS_SERVICE_API || 'vault-rush-prod-api' }}"
+              repo="${{ vars.ECR_REPOSITORY_API || 'vault-rush-prod-api' }}" ;;
+            worker)
+              service="${{ vars.ECS_SERVICE_WORKER || 'vault-rush-prod-worker' }}"
+              repo="${{ vars.ECR_REPOSITORY_WORKER || 'vault-rush-prod-worker' }}" ;;
+          esac
+          {
+            echo "cluster=$cluster"
+            echo "service=$service"
+            echo "image=${{ needs.images.outputs.registry }}/$repo:${DEPLOY_SHA}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Fetch current task definition
+        run: |
+          family=$(aws ecs describe-services \
+            --cluster "${{ steps.names.outputs.cluster }}" \
+            --services "${{ steps.names.outputs.service }}" \
+            --query 'services[0].taskDefinition' --output text | sed -E 's#.*/([^:]+):[0-9]+$#\1#')
+          # Latest registered revision of the family (Terraform may have registered a newer
+          # template than the one currently running).
+          aws ecs describe-task-definition --task-definition "$family" \
+            --query taskDefinition > task-definition.json
+          echo "family=$family" >> "$GITHUB_ENV"
+
+      - name: Render task definition
+        id: render
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ matrix.service }}
+          image: ${{ steps.names.outputs.image }}
+
+      - name: Deploy and wait for stability
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.render.outputs.task-definition }}
+          cluster: ${{ steps.names.outputs.cluster }}
+          service: ${{ steps.names.outputs.service }}
+          wait-for-service-stability: true
+          wait-for-minutes: 15
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "- ecs \`${{ steps.names.outputs.service }}\` -> \`${{ steps.names.outputs.image }}\`: ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+
+  # ------------------------------------------------------------------------------------
+  # Static sites: build the Vite bundles and publish to S3 behind CloudFront.
+  # Hashed assets are uploaded first with immutable caching; index.html last with no-cache
+  # so a half-finished sync never references missing chunks.
+  # ------------------------------------------------------------------------------------
+  static:
+    name: publish ${{ matrix.app }}
+    needs: gate
+    if: github.event_name == 'workflow_run' || inputs.deploy_static
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [client, admin]
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_SHA }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+
+      - name: Resolve targets
+        id: t
+        run: |
+          case "${{ matrix.app }}" in
+            client)
+              echo "bucket=${{ vars.CLIENT_BUCKET }}" >> "$GITHUB_OUTPUT"
+              echo "distribution=${{ vars.CLIENT_DISTRIBUTION_ID }}" >> "$GITHUB_OUTPUT"
+              echo "api_url=${{ vars.CLIENT_API_URL }}" >> "$GITHUB_OUTPUT" ;;
+            admin)
+              echo "bucket=${{ vars.ADMIN_BUCKET }}" >> "$GITHUB_OUTPUT"
+              echo "distribution=${{ vars.ADMIN_DISTRIBUTION_ID }}" >> "$GITHUB_OUTPUT"
+              echo "api_url=${{ vars.ADMIN_API_URL }}" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Build
+        env:
+          VITE_API_URL: ${{ steps.t.outputs.api_url }}
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-session-name: gha-vault-rush-static-${{ matrix.app }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Sync to S3
+        run: |
+          test -n "${{ steps.t.outputs.bucket }}" || { echo "::error::bucket variable not set for ${{ matrix.app }}"; exit 1; }
+          # 1) hashed assets: immutable
+          aws s3 sync dist/ "s3://${{ steps.t.outputs.bucket }}/" \
+            --exclude "index.html" \
+            --cache-control "public, max-age=31536000, immutable" \
+            --delete
+          # 2) entry point: never cached
+          aws s3 cp dist/index.html "s3://${{ steps.t.outputs.bucket }}/index.html" \
+            --cache-control "no-cache" --content-type "text/html; charset=utf-8"
+
+      - name: Invalidate CloudFront
+        run: |
+          test -n "${{ steps.t.outputs.distribution }}" || { echo "::error::distribution variable not set"; exit 1; }
+          aws cloudfront create-invalidation \
+            --distribution-id "${{ steps.t.outputs.distribution }}" \
+            --paths "/index.html" "/" >/dev/null
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "- static \`${{ matrix.app }}\` -> s3://${{ steps.t.outputs.bucket }} (cf ${{ steps.t.outputs.distribution }}): ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"

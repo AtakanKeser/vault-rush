@@ -1,0 +1,9 @@
+# Per-Dockerfile ignore (BuildKit picks up <Dockerfile>.dockerignore next to the Dockerfile).
+*
+!client/
+!infrastructure/docker/nginx/
+client/node_modules/
+client/dist/
+client/.vite/
+client/.env
+client/.env.*

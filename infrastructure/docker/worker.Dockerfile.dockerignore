@@ -1,0 +1,7 @@
+# Per-Dockerfile ignore (BuildKit picks up <Dockerfile>.dockerignore next to the Dockerfile).
+# Build context is the repo root; only backend/ is needed for this image.
+*
+!backend/
+backend/bin/
+backend/coverage.out
+backend/**/*.test

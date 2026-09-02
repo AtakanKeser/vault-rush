@@ -1,0 +1,132 @@
+# Vault Rush — full local stack.
+#
+#   docker compose up --build
+#
+# Host ports are overridable so the stack coexists with other projects:
+#   API_PORT=8090 ADMIN_PORT=8082 CLIENT_PORT=8081 docker compose up
+#
+# Services:
+#   api        Go HTTP API            → http://localhost:${API_PORT}
+#   worker     Go SQS consumer + jobs → http://localhost:${WORKER_PORT}/metrics
+#   client     game (static, nginx)   → http://localhost:${CLIENT_PORT}
+#   admin      LiveOps panel (nginx)  → http://localhost:${ADMIN_PORT}
+#   redis      leaderboard / counters / rate limits / hot config
+#   dynamodb   DynamoDB Local (players, runs, events, configs, rewards)
+#   elasticmq  SQS-compatible queue (events + DLQ)
+
+name: vault-rush
+
+x-backend-env: &backend-env
+  ENV: local
+  STORAGE: dynamodb
+  CACHE: redis
+  QUEUE: sqs
+  REDIS_ADDR: redis:6379
+  DYNAMODB_ENDPOINT: http://dynamodb:8000
+  DYNAMODB_TABLE: vault_rush
+  AWS_REGION: eu-central-1
+  AWS_ACCESS_KEY_ID: local
+  AWS_SECRET_ACCESS_KEY: local
+  SQS_QUEUE_URL: http://elasticmq:9324/000000000000/vault-rush-events
+  SQS_ENDPOINT: http://elasticmq:9324
+  ADMIN_TOKEN: ${ADMIN_TOKEN:-local-admin-token}
+  TOKEN_SECRET: ${TOKEN_SECRET:-dev-secret-change-me}
+  TELEMETRY_WORKERS: "8"
+  TELEMETRY_BUFFER: "1000"
+  RATE_LIMIT_PER_MIN: "600"
+  CORS_ORIGINS: "*"
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+
+services:
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "256mb", "--maxmemory-policy", "allkeys-lru"]
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  dynamodb:
+    image: amazon/dynamodb-local:2.5.2
+    command: ["-jar", "DynamoDBLocal.jar", "-inMemory", "-sharedDb"]
+    ports:
+      - "${DYNAMODB_PORT:-8000}:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000 -o /dev/null || [ $$? -eq 22 ]"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  elasticmq:
+    image: softwaremill/elasticmq-native:1.6.11
+    volumes:
+      - ./infrastructure/docker/elasticmq.conf:/opt/elasticmq.conf:ro
+    ports:
+      - "${SQS_PORT:-9324}:9324"
+      - "${SQS_UI_PORT:-9325}:9325"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9324/?Action=ListQueues >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/api.Dockerfile
+      args:
+        VERSION: ${VERSION:-local}
+    environment:
+      <<: *backend-env
+      PORT: "8080"
+    ports:
+      - "${API_PORT:-8080}:8080"
+    depends_on:
+      redis: { condition: service_healthy }
+      dynamodb: { condition: service_healthy }
+      elasticmq: { condition: service_healthy }
+    restart: unless-stopped
+    stop_grace_period: 25s
+
+  worker:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/worker.Dockerfile
+      args:
+        VERSION: ${VERSION:-local}
+    environment:
+      <<: *backend-env
+      PORT: "8081"
+    ports:
+      - "${WORKER_PORT:-8083}:8081"
+    depends_on:
+      redis: { condition: service_healthy }
+      dynamodb: { condition: service_healthy }
+      elasticmq: { condition: service_healthy }
+    restart: unless-stopped
+    stop_grace_period: 25s
+
+  client:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/client.Dockerfile
+      args:
+        VITE_API_URL: ${PUBLIC_API_URL:-http://localhost:${API_PORT:-8080}}
+    ports:
+      - "${CLIENT_PORT:-8081}:8081"
+    depends_on:
+      - api
+
+  admin:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/admin.Dockerfile
+    environment:
+      API_UPSTREAM: http://api:8080
+    ports:
+      - "${ADMIN_PORT:-8082}:8082"
+    depends_on:
+      - api

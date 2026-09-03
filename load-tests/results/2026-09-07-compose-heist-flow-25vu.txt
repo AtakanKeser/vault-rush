@@ -1,0 +1,219 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: heist-flow.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 25 max VUs, 1m15s max duration (incl. graceful stop):
+              * heists: 25 looping VUs for 1m0s (gracefulStop: 15s)
+
+
+running (0m01.0s), 25/25 VUs, 0 complete and 0 interrupted iterations
+heists   [   2% ] 25 VUs  0m01.0s/1m0s
+
+running (0m02.0s), 25/25 VUs, 25 complete and 0 interrupted iterations
+heists   [   3% ] 25 VUs  0m02.0s/1m0s
+
+running (0m03.0s), 25/25 VUs, 25 complete and 0 interrupted iterations
+heists   [   5% ] 25 VUs  0m03.0s/1m0s
+
+running (0m04.0s), 25/25 VUs, 50 complete and 0 interrupted iterations
+heists   [   7% ] 25 VUs  0m04.0s/1m0s
+
+running (0m05.0s), 25/25 VUs, 50 complete and 0 interrupted iterations
+heists   [   8% ] 25 VUs  0m05.0s/1m0s
+
+running (0m06.0s), 25/25 VUs, 75 complete and 0 interrupted iterations
+heists   [  10% ] 25 VUs  0m06.0s/1m0s
+
+running (0m07.0s), 25/25 VUs, 75 complete and 0 interrupted iterations
+heists   [  12% ] 25 VUs  0m07.0s/1m0s
+
+running (0m08.0s), 25/25 VUs, 100 complete and 0 interrupted iterations
+heists   [  13% ] 25 VUs  0m08.0s/1m0s
+
+running (0m09.0s), 25/25 VUs, 100 complete and 0 interrupted iterations
+heists   [  15% ] 25 VUs  0m09.0s/1m0s
+
+running (0m10.0s), 25/25 VUs, 125 complete and 0 interrupted iterations
+heists   [  17% ] 25 VUs  0m10.0s/1m0s
+
+running (0m11.0s), 25/25 VUs, 125 complete and 0 interrupted iterations
+heists   [  18% ] 25 VUs  0m11.0s/1m0s
+
+running (0m12.0s), 25/25 VUs, 150 complete and 0 interrupted iterations
+heists   [  20% ] 25 VUs  0m12.0s/1m0s
+
+running (0m13.0s), 25/25 VUs, 155 complete and 0 interrupted iterations
+heists   [  22% ] 25 VUs  0m13.0s/1m0s
+
+running (0m14.0s), 25/25 VUs, 175 complete and 0 interrupted iterations
+heists   [  23% ] 25 VUs  0m14.0s/1m0s
+
+running (0m15.0s), 25/25 VUs, 181 complete and 0 interrupted iterations
+heists   [  25% ] 25 VUs  0m15.0s/1m0s
+
+running (0m16.0s), 25/25 VUs, 204 complete and 0 interrupted iterations
+heists   [  27% ] 25 VUs  0m16.0s/1m0s
+
+running (0m17.0s), 25/25 VUs, 225 complete and 0 interrupted iterations
+heists   [  28% ] 25 VUs  0m17.0s/1m0s
+
+running (0m18.0s), 25/25 VUs, 231 complete and 0 interrupted iterations
+heists   [  30% ] 25 VUs  0m18.0s/1m0s
+
+running (0m19.0s), 25/25 VUs, 254 complete and 0 interrupted iterations
+heists   [  32% ] 25 VUs  0m19.0s/1m0s
+
+running (0m20.0s), 25/25 VUs, 261 complete and 0 interrupted iterations
+heists   [  33% ] 25 VUs  0m20.0s/1m0s
+
+running (0m21.0s), 25/25 VUs, 280 complete and 0 interrupted iterations
+heists   [  35% ] 25 VUs  0m21.0s/1m0s
+
+running (0m22.0s), 25/25 VUs, 290 complete and 0 interrupted iterations
+heists   [  37% ] 25 VUs  0m22.0s/1m0s
+
+running (0m23.0s), 25/25 VUs, 311 complete and 0 interrupted iterations
+heists   [  38% ] 25 VUs  0m23.0s/1m0s
+
+running (0m24.0s), 25/25 VUs, 330 complete and 0 interrupted iterations
+heists   [  40% ] 25 VUs  0m24.0s/1m0s
+
+running (0m25.0s), 25/25 VUs, 336 complete and 0 interrupted iterations
+heists   [  42% ] 25 VUs  0m25.0s/1m0s
+
+running (0m26.0s), 25/25 VUs, 356 complete and 0 interrupted iterations
+heists   [  43% ] 25 VUs  0m26.0s/1m0s
+
+running (0m27.0s), 25/25 VUs, 361 complete and 0 interrupted iterations
+heists   [  45% ] 25 VUs  0m27.0s/1m0s
+
+running (0m28.0s), 25/25 VUs, 386 complete and 0 interrupted iterations
+heists   [  47% ] 25 VUs  0m28.0s/1m0s
+
+running (0m29.0s), 25/25 VUs, 390 complete and 0 interrupted iterations
+heists   [  48% ] 25 VUs  0m29.0s/1m0s
+
+running (0m30.0s), 25/25 VUs, 411 complete and 0 interrupted iterations
+heists   [  50% ] 25 VUs  0m30.0s/1m0s
+
+running (0m31.0s), 25/25 VUs, 436 complete and 0 interrupted iterations
+heists   [  52% ] 25 VUs  0m31.0s/1m0s
+
+running (0m32.0s), 25/25 VUs, 436 complete and 0 interrupted iterations
+heists   [  53% ] 25 VUs  0m32.0s/1m0s
+
+running (0m33.0s), 25/25 VUs, 461 complete and 0 interrupted iterations
+heists   [  55% ] 25 VUs  0m33.0s/1m0s
+
+running (0m34.0s), 25/25 VUs, 465 complete and 0 interrupted iterations
+heists   [  57% ] 25 VUs  0m34.0s/1m0s
+
+running (0m35.0s), 25/25 VUs, 486 complete and 0 interrupted iterations
+heists   [  58% ] 25 VUs  0m35.0s/1m0s
+
+running (0m36.0s), 25/25 VUs, 494 complete and 0 interrupted iterations
+heists   [  60% ] 25 VUs  0m36.0s/1m0s
+
+running (0m37.0s), 25/25 VUs, 514 complete and 0 interrupted iterations
+heists   [  62% ] 25 VUs  0m37.0s/1m0s
+
+running (0m38.0s), 25/25 VUs, 536 complete and 0 interrupted iterations
+heists   [  63% ] 25 VUs  0m38.0s/1m0s
+
+running (0m39.0s), 25/25 VUs, 541 complete and 0 interrupted iterations
+heists   [  65% ] 25 VUs  0m39.0s/1m0s
+
+running (0m40.0s), 25/25 VUs, 561 complete and 0 interrupted iterations
+heists   [  67% ] 25 VUs  0m40.0s/1m0s
+
+running (0m41.0s), 25/25 VUs, 568 complete and 0 interrupted iterations
+heists   [  68% ] 25 VUs  0m41.0s/1m0s
+
+running (0m42.0s), 25/25 VUs, 590 complete and 0 interrupted iterations
+heists   [  70% ] 25 VUs  0m42.0s/1m0s
+
+running (0m43.0s), 25/25 VUs, 596 complete and 0 interrupted iterations
+heists   [  72% ] 25 VUs  0m43.0s/1m0s
+
+running (0m44.0s), 25/25 VUs, 616 complete and 0 interrupted iterations
+heists   [  73% ] 25 VUs  0m44.0s/1m0s
+
+running (0m45.0s), 25/25 VUs, 640 complete and 0 interrupted iterations
+heists   [  75% ] 25 VUs  0m45.0s/1m0s
+
+running (0m46.0s), 25/25 VUs, 645 complete and 0 interrupted iterations
+heists   [  77% ] 25 VUs  0m46.0s/1m0s
+
+running (0m47.0s), 25/25 VUs, 666 complete and 0 interrupted iterations
+heists   [  78% ] 25 VUs  0m47.0s/1m0s
+
+running (0m48.0s), 25/25 VUs, 673 complete and 0 interrupted iterations
+heists   [  80% ] 25 VUs  0m48.0s/1m0s
+
+running (0m49.0s), 25/25 VUs, 695 complete and 0 interrupted iterations
+heists   [  82% ] 25 VUs  0m49.0s/1m0s
+
+running (0m50.0s), 25/25 VUs, 716 complete and 0 interrupted iterations
+heists   [  83% ] 25 VUs  0m50.0s/1m0s
+
+running (0m51.0s), 25/25 VUs, 722 complete and 0 interrupted iterations
+heists   [  85% ] 25 VUs  0m51.0s/1m0s
+
+running (0m52.0s), 25/25 VUs, 743 complete and 0 interrupted iterations
+heists   [  87% ] 25 VUs  0m52.0s/1m0s
+
+running (0m53.0s), 25/25 VUs, 753 complete and 0 interrupted iterations
+heists   [  88% ] 25 VUs  0m53.0s/1m0s
+
+running (0m54.0s), 25/25 VUs, 770 complete and 0 interrupted iterations
+heists   [  90% ] 25 VUs  0m54.0s/1m0s
+
+running (0m55.0s), 25/25 VUs, 791 complete and 0 interrupted iterations
+heists   [  92% ] 25 VUs  0m55.0s/1m0s
+
+running (0m56.0s), 25/25 VUs, 801 complete and 0 interrupted iterations
+heists   [  93% ] 25 VUs  0m56.0s/1m0s
+
+running (0m57.0s), 25/25 VUs, 820 complete and 0 interrupted iterations
+heists   [  95% ] 25 VUs  0m57.0s/1m0s
+
+running (0m58.0s), 25/25 VUs, 830 complete and 0 interrupted iterations
+heists   [  97% ] 25 VUs  0m58.0s/1m0s
+
+running (0m59.0s), 25/25 VUs, 849 complete and 0 interrupted iterations
+heists   [  98% ] 25 VUs  0m59.0s/1m0s
+
+running (1m00.0s), 25/25 VUs, 870 complete and 0 interrupted iterations
+heists   [ 100% ] 25 VUs  1m00.0s/1m0s
+
+running (1m01.0s), 16/25 VUs, 879 complete and 0 interrupted iterations
+heists ↓ [ 100% ] 25 VUs  1m0s
+
+Vault Rush load test - heist-flow
+  base_url    http://localhost:8095
+  vus         25    duration 60s    sleep 1.5s
+  requests    4475    throughput 72.66 req/s
+  error rate  0.00% (0 failed / 4475)
+  latency ms  p50 19.06   p95 114.10   p99 166.79   max 232.63
+  per endpoint (ms):
+    POST /v1/heists/start            p50     43.83 p95    154.32 p99    206.20 max    232.63
+    POST /v1/heists/{runId}/finish   p50     53.06 p95    139.49 p99    173.84 max    202.16
+    POST /v1/rewards/claim           p50     29.31 p95     81.85 p99     99.96 max    187.01
+  checks      100.00% passed (9845/9845)
+  thresholds:
+    PASS  score_mismatch: count==0
+    PASS  http_req_failed: rate<0.01
+    PASS  heist_finish_duration: p(95)<300
+    PASS  heist_start_duration: p(95)<300
+
+
+running (1m01.6s), 00/25 VUs, 895 complete and 0 interrupted iterations
+heists ✓ [ 100% ] 25 VUs  1m0s

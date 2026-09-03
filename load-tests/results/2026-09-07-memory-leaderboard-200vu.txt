@@ -1,0 +1,215 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: leaderboard.js
+        output: -
+
+     scenarios: (100.00%) 1 scenario, 200 max VUs, 1m10s max duration (incl. graceful stop):
+              * readers: 200 looping VUs for 1m0s (gracefulStop: 10s)
+
+
+running (0m01.0s), 200/200 VUs, 0 complete and 0 interrupted iterations
+readers   [   2% ] 200 VUs  0m01.0s/1m0s
+
+running (0m02.0s), 200/200 VUs, 200 complete and 0 interrupted iterations
+readers   [   3% ] 200 VUs  0m02.0s/1m0s
+
+running (0m03.0s), 200/200 VUs, 200 complete and 0 interrupted iterations
+readers   [   5% ] 200 VUs  0m03.0s/1m0s
+
+running (0m04.0s), 200/200 VUs, 400 complete and 0 interrupted iterations
+readers   [   7% ] 200 VUs  0m04.0s/1m0s
+
+running (0m05.0s), 200/200 VUs, 600 complete and 0 interrupted iterations
+readers   [   8% ] 200 VUs  0m05.0s/1m0s
+
+running (0m06.0s), 200/200 VUs, 600 complete and 0 interrupted iterations
+readers   [  10% ] 200 VUs  0m06.0s/1m0s
+
+running (0m07.0s), 200/200 VUs, 800 complete and 0 interrupted iterations
+readers   [  12% ] 200 VUs  0m07.0s/1m0s
+
+running (0m08.0s), 200/200 VUs, 1000 complete and 0 interrupted iterations
+readers   [  13% ] 200 VUs  0m08.0s/1m0s
+
+running (0m09.0s), 200/200 VUs, 1000 complete and 0 interrupted iterations
+readers   [  15% ] 200 VUs  0m09.0s/1m0s
+
+running (0m10.0s), 200/200 VUs, 1200 complete and 0 interrupted iterations
+readers   [  17% ] 200 VUs  0m10.0s/1m0s
+
+running (0m11.0s), 200/200 VUs, 1400 complete and 0 interrupted iterations
+readers   [  18% ] 200 VUs  0m11.0s/1m0s
+
+running (0m12.0s), 200/200 VUs, 1400 complete and 0 interrupted iterations
+readers   [  20% ] 200 VUs  0m12.0s/1m0s
+
+running (0m13.0s), 200/200 VUs, 1600 complete and 0 interrupted iterations
+readers   [  22% ] 200 VUs  0m13.0s/1m0s
+
+running (0m14.0s), 200/200 VUs, 1800 complete and 0 interrupted iterations
+readers   [  23% ] 200 VUs  0m14.0s/1m0s
+
+running (0m15.0s), 200/200 VUs, 1800 complete and 0 interrupted iterations
+readers   [  25% ] 200 VUs  0m15.0s/1m0s
+
+running (0m16.0s), 200/200 VUs, 2000 complete and 0 interrupted iterations
+readers   [  27% ] 200 VUs  0m16.0s/1m0s
+
+running (0m17.0s), 200/200 VUs, 2200 complete and 0 interrupted iterations
+readers   [  28% ] 200 VUs  0m17.0s/1m0s
+
+running (0m18.0s), 200/200 VUs, 2200 complete and 0 interrupted iterations
+readers   [  30% ] 200 VUs  0m18.0s/1m0s
+
+running (0m19.0s), 200/200 VUs, 2400 complete and 0 interrupted iterations
+readers   [  32% ] 200 VUs  0m19.0s/1m0s
+
+running (0m20.0s), 200/200 VUs, 2600 complete and 0 interrupted iterations
+readers   [  33% ] 200 VUs  0m20.0s/1m0s
+
+running (0m21.0s), 200/200 VUs, 2600 complete and 0 interrupted iterations
+readers   [  35% ] 200 VUs  0m21.0s/1m0s
+
+running (0m22.0s), 200/200 VUs, 2800 complete and 0 interrupted iterations
+readers   [  37% ] 200 VUs  0m22.0s/1m0s
+
+running (0m23.0s), 200/200 VUs, 3000 complete and 0 interrupted iterations
+readers   [  38% ] 200 VUs  0m23.0s/1m0s
+
+running (0m24.0s), 200/200 VUs, 3000 complete and 0 interrupted iterations
+readers   [  40% ] 200 VUs  0m24.0s/1m0s
+
+running (0m25.0s), 200/200 VUs, 3200 complete and 0 interrupted iterations
+readers   [  42% ] 200 VUs  0m25.0s/1m0s
+
+running (0m26.0s), 200/200 VUs, 3400 complete and 0 interrupted iterations
+readers   [  43% ] 200 VUs  0m26.0s/1m0s
+
+running (0m27.0s), 200/200 VUs, 3400 complete and 0 interrupted iterations
+readers   [  45% ] 200 VUs  0m27.0s/1m0s
+
+running (0m28.0s), 200/200 VUs, 3600 complete and 0 interrupted iterations
+readers   [  47% ] 200 VUs  0m28.0s/1m0s
+
+running (0m29.0s), 200/200 VUs, 3800 complete and 0 interrupted iterations
+readers   [  48% ] 200 VUs  0m29.0s/1m0s
+
+running (0m30.0s), 200/200 VUs, 3800 complete and 0 interrupted iterations
+readers   [  50% ] 200 VUs  0m30.0s/1m0s
+
+running (0m31.0s), 200/200 VUs, 4000 complete and 0 interrupted iterations
+readers   [  52% ] 200 VUs  0m31.0s/1m0s
+
+running (0m32.0s), 200/200 VUs, 4200 complete and 0 interrupted iterations
+readers   [  53% ] 200 VUs  0m32.0s/1m0s
+
+running (0m33.0s), 200/200 VUs, 4200 complete and 0 interrupted iterations
+readers   [  55% ] 200 VUs  0m33.0s/1m0s
+
+running (0m34.0s), 200/200 VUs, 4400 complete and 0 interrupted iterations
+readers   [  57% ] 200 VUs  0m34.0s/1m0s
+
+running (0m35.0s), 200/200 VUs, 4600 complete and 0 interrupted iterations
+readers   [  58% ] 200 VUs  0m35.0s/1m0s
+
+running (0m36.0s), 200/200 VUs, 4600 complete and 0 interrupted iterations
+readers   [  60% ] 200 VUs  0m36.0s/1m0s
+
+running (0m37.0s), 200/200 VUs, 4800 complete and 0 interrupted iterations
+readers   [  62% ] 200 VUs  0m37.0s/1m0s
+
+running (0m38.0s), 200/200 VUs, 5000 complete and 0 interrupted iterations
+readers   [  63% ] 200 VUs  0m38.0s/1m0s
+
+running (0m39.0s), 200/200 VUs, 5000 complete and 0 interrupted iterations
+readers   [  65% ] 200 VUs  0m39.0s/1m0s
+
+running (0m40.0s), 200/200 VUs, 5200 complete and 0 interrupted iterations
+readers   [  67% ] 200 VUs  0m40.0s/1m0s
+
+running (0m41.0s), 200/200 VUs, 5400 complete and 0 interrupted iterations
+readers   [  68% ] 200 VUs  0m41.0s/1m0s
+
+running (0m42.0s), 200/200 VUs, 5400 complete and 0 interrupted iterations
+readers   [  70% ] 200 VUs  0m42.0s/1m0s
+
+running (0m43.0s), 200/200 VUs, 5600 complete and 0 interrupted iterations
+readers   [  72% ] 200 VUs  0m43.0s/1m0s
+
+running (0m44.0s), 200/200 VUs, 5800 complete and 0 interrupted iterations
+readers   [  73% ] 200 VUs  0m44.0s/1m0s
+
+running (0m45.0s), 200/200 VUs, 5800 complete and 0 interrupted iterations
+readers   [  75% ] 200 VUs  0m45.0s/1m0s
+
+running (0m46.0s), 200/200 VUs, 6000 complete and 0 interrupted iterations
+readers   [  77% ] 200 VUs  0m46.0s/1m0s
+
+running (0m47.0s), 200/200 VUs, 6200 complete and 0 interrupted iterations
+readers   [  78% ] 200 VUs  0m47.0s/1m0s
+
+running (0m48.0s), 200/200 VUs, 6200 complete and 0 interrupted iterations
+readers   [  80% ] 200 VUs  0m48.0s/1m0s
+
+running (0m49.0s), 200/200 VUs, 6400 complete and 0 interrupted iterations
+readers   [  82% ] 200 VUs  0m49.0s/1m0s
+
+running (0m50.0s), 200/200 VUs, 6600 complete and 0 interrupted iterations
+readers   [  83% ] 200 VUs  0m50.0s/1m0s
+
+running (0m51.0s), 200/200 VUs, 6600 complete and 0 interrupted iterations
+readers   [  85% ] 200 VUs  0m51.0s/1m0s
+
+running (0m52.0s), 200/200 VUs, 6800 complete and 0 interrupted iterations
+readers   [  87% ] 200 VUs  0m52.0s/1m0s
+
+running (0m53.0s), 200/200 VUs, 7000 complete and 0 interrupted iterations
+readers   [  88% ] 200 VUs  0m53.0s/1m0s
+
+running (0m54.0s), 200/200 VUs, 7000 complete and 0 interrupted iterations
+readers   [  90% ] 200 VUs  0m54.0s/1m0s
+
+running (0m55.0s), 200/200 VUs, 7200 complete and 0 interrupted iterations
+readers   [  92% ] 200 VUs  0m55.0s/1m0s
+
+running (0m56.0s), 200/200 VUs, 7400 complete and 0 interrupted iterations
+readers   [  93% ] 200 VUs  0m56.0s/1m0s
+
+running (0m57.0s), 200/200 VUs, 7400 complete and 0 interrupted iterations
+readers   [  95% ] 200 VUs  0m57.0s/1m0s
+
+running (0m58.0s), 200/200 VUs, 7600 complete and 0 interrupted iterations
+readers   [  97% ] 200 VUs  0m58.0s/1m0s
+
+running (0m59.0s), 200/200 VUs, 7800 complete and 0 interrupted iterations
+readers   [  98% ] 200 VUs  0m59.0s/1m0s
+
+running (1m00.0s), 200/200 VUs, 7800 complete and 0 interrupted iterations
+readers   [ 100% ] 200 VUs  1m00.0s/1m0s
+
+Vault Rush load test - leaderboard
+  base_url    http://localhost:8090
+  vus         200    duration 60s    sleep 1.5s
+  requests    16200    throughput 268.66 req/s
+  error rate  0.00% (0 failed / 16200)
+  latency ms  p50 1.04   p95 9.84   p99 19.05   max 52.88
+  per endpoint (ms):
+    GET /v1/leaderboard/global       p50      1.09 p95     10.75 p99     20.10 max     52.88
+    GET /v1/events/current           p50      0.91 p95      8.06 p99     12.74 max     25.54
+  checks      100.00% passed (32400/32400)
+  thresholds:
+    PASS  http_req_duration: p(95)<200
+    PASS  events_duration: p(95)<200
+    PASS  leaderboard_duration: p(95)<200
+    PASS  http_req_failed: rate<0.01
+
+
+running (1m00.3s), 000/200 VUs, 8000 complete and 0 interrupted iterations
+readers ✓ [ 100% ] 200 VUs  1m0s

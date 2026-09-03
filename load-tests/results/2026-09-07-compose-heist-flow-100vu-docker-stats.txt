@@ -1,0 +1,18 @@
+vault-rush-api-1	59.15%	75.44MiB / 7.75GiB
+vault-rush-dynamodb-1	64.95%	659MiB / 7.75GiB
+vault-rush-redis-1	4.30%	9.777MiB / 7.75GiB
+vault-rush-worker-1	37.48%	48.93MiB / 7.75GiB
+vault-rush-elasticmq-1	98.23%	102.8MiB / 7.75GiB
+---
+vault-rush-api-1	96.31%	73.37MiB / 7.75GiB
+vault-rush-dynamodb-1	109.76%	663.8MiB / 7.75GiB
+vault-rush-redis-1	7.70%	9.766MiB / 7.75GiB
+vault-rush-worker-1	38.00%	49.76MiB / 7.75GiB
+vault-rush-elasticmq-1	120.96%	123.7MiB / 7.75GiB
+---
+vault-rush-api-1	90.50%	82.28MiB / 7.75GiB
+vault-rush-dynamodb-1	120.40%	670.1MiB / 7.75GiB
+vault-rush-redis-1	8.18%	9.746MiB / 7.75GiB
+vault-rush-worker-1	42.54%	49.35MiB / 7.75GiB
+vault-rush-elasticmq-1	102.20%	106.2MiB / 7.75GiB
+---

@@ -37,8 +37,9 @@ Positive:
 - The finish path has one commit point and a simple failure story; no dual-write
   anomaly can show a score for a run that was not settled, which is the failure mode of
   writing Redis first.
-- Request latency does not include Redis at all: the handler returns right after the
-  DynamoDB writes and one non-blocking channel send.
+- Request latency does not include Redis at all. Measured locally, `finish` p95 stays in
+  single-digit milliseconds against the in-memory adapters and low tens of milliseconds
+  against DynamoDB Local + Redis in Docker (`docs/load-testing.md`).
 - `ZADD GT` (keep best) makes every delivery idempotent, so at-least-once SQS delivery and
   DLQ replays are harmless.
 - The lag is normally sub-millisecond in inline mode and a queue hop (well under a

@@ -127,6 +127,15 @@ aws logs tail /vault-rush-prod/api --since 15m --follow --format short
 aws logs tail /vault-rush-prod/api --since 1h --filter-pattern '{ $.requestId = "REQ_ID" }'
 ```
 
+## 4b. Enabling production deploys
+
+`deploy.yml` is opt-in. It runs its AWS jobs only when the repository variable
+`DEPLOY_ENABLED` equals `true`; otherwise it records a "deploy skipped" notice so the
+workflow stays green on forks and on repositories without AWS behind them. Enable it after
+`terraform apply` by copying `terraform output github_actions_variables` into the
+`production` environment and setting `DEPLOY_ENABLED=true` under Settings → Secrets and
+variables → Actions → Variables.
+
 ## 5. When Redis is down
 
 **Symptoms:** `/readyz` returns 503 with `deps.redis != ok`; `GET /v1/leaderboard/*`

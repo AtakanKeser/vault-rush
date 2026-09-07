@@ -19,6 +19,10 @@ name: Deploy
 #
 # No long-lived AWS keys: aws-actions/configure-aws-credentials exchanges the job's OIDC
 # token for short-lived credentials of AWS_ROLE_ARN.
+#
+# Opt-in switch: nothing here runs until the repository variable DEPLOY_ENABLED is set to
+# "true" (Settings -> Secrets and variables -> Actions -> Variables). Until then the
+# workflow only records a notice, so a repository without AWS behind it stays green.
 
 on:
   workflow_run:
@@ -47,12 +51,30 @@ env:
   AWS_REGION: ${{ vars.AWS_REGION || 'eu-central-1' }}
 
 jobs:
+  not-configured:
+    name: deploy disabled (set DEPLOY_ENABLED=true after terraform apply)
+    runs-on: ubuntu-latest
+    if: vars.DEPLOY_ENABLED != 'true'
+    steps:
+      - run: |
+          echo "::notice::Deployment is disabled: set the repository variable DEPLOY_ENABLED=true and the production environment secrets/variables listed at the top of deploy.yml (all provided by 'terraform output')."
+          {
+            echo "## Deploy skipped"
+            echo
+            echo "AWS is not configured for this repository yet. To enable deployments:"
+            echo
+            echo "1. \`cd infrastructure/terraform && make apply\`"
+            echo "2. Copy \`terraform output github_actions_variables\` into the \`production\` environment"
+            echo "3. Set the repository variable \`DEPLOY_ENABLED=true\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   gate:
     name: gate (CI succeeded on main)
     runs-on: ubuntu-latest
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+      vars.DEPLOY_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'))
     steps:
       - run: |
           echo "Deploying ${DEPLOY_SHA} (trigger: ${{ github.event_name }})" | tee -a "$GITHUB_STEP_SUMMARY"
